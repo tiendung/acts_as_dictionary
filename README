@@ -1,0 +1,82 @@
+ActsAsDictionary
+================
+
+ActsAsDictionary creates Hunspell (http://hunspell.sourceforge.net/) dictionaries using data from ActiveRecord models and provides class methods to access these dictionaries.
+
+Pre-requisites
+==============
+
+This plugin relies on the Hunspell gem, which in turn requires the Hunspell library. Note that the current version of the Hunspell gem (0.1.1) only works with Hunspell 1.1.x (libhunspell-1.1).
+
+To install Hunspell:
+	
+	curl -L http://downloads.sourceforge.net/hunspell/hunspell-1.1.12-2.tar.gz -o hunspell-1.1.12-2.tar.gz
+	tar -xvf hunspell-1.1.12-2.tar.gz
+	cd hunspell-1.1.12
+	./configure
+	make
+	make install
+	
+To install the Hunspell gem:
+	
+	gem install hunspell
+	
+Setup
+=====
+
+Within a model, define the column you want to work with:
+
+	class Building < ActiveRecord::Base
+	  acts_as_dictionary :checks => :name
+	end
+
+Or, if you want to create dictionaries using two or more columns
+
+	class Building < ActiveRecord::Base
+	  acts_as_dictionary :checks => [:name, :type]
+	end
+
+Once done, you can proceed to generate the basic Hunspell dictionary files with:
+
+	rake dict:generate
+
+In the example above, the following files will be generated:
+
+	#{Rails.root}/dict/building_names.aff
+	#{Rails.root}/dict/building_names.dic
+	#{Rails.root}/dict/building_types.aff
+	#{Rails.root}/dict/building_types.dic
+	
+Each pair of these files (*.aff and *.dic) are Hunspell dictionary definition files	which you can further configure if needed (see http://sourceforge.net/docman/display_doc.php?docid=29374&group_id=143754).
+
+Note that if manually configure the files, running the dict:generate Rake task again will override your manual configurations.
+
+Usage
+=====
+
+With this example:
+
+	class Building < ActiveRecord::Base
+	  acts_as_dictionary :checks => :name
+	end
+
+You can do:
+
+	>> Building.find_by_name_with_spell_check("Emprye State Buildng")
+	=> #<Building name: "Empire State Building">
+
+This is similar to ActiveRecord's regular find_by_* dynamic attribute-based finders, but with spell checking functionality, whereby one record with the closest match will be returned. However, note that unlike the regular find_by_* methods, which except multiple column names, this only excepts one of the columns you have defined to check ('name' in this case).
+
+You can also do:
+	
+	>> Building.name_dictionary
+	=> #<Hunspell:0x2f6aad4>
+	
+This returns the Hunspell dictionary object, which you can use as such:
+
+	>> Building.name_dictionary.spellcheck("Empire State Building")
+	=> true
+
+	>> Building.name_dictionary.suggest("Emprye State Buildng".downcase)
+	=> ["Empire State Building", "Emperor Building"]
+	
