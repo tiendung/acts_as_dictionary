@@ -36,11 +36,11 @@ Or, if you want to create dictionaries using two or more columns
 	  acts_as_dictionary :checks => [:name, :type]
 	end
 
-Once done, you can proceed to generate the basic Hunspell dictionary files with:
+Once done, you can proceed to generate basic Hunspell dictionary files with:
 
 	rake dict:generate
 
-In the example above, the following files will be generated:
+In the above example, the following files will be generated:
 
 	#{Rails.root}/dict/building_names.aff
 	#{Rails.root}/dict/building_names.dic
@@ -65,14 +65,14 @@ You can do:
 	>> Building.find_by_name_with_spell_check("Emprye State Buildng")
 	=> #<Building name: "Empire State Building">
 
-This is similar to ActiveRecord's regular find_by_* dynamic attribute-based finders, but with spell checking functionality, whereby one record with the closest match will be returned. However, note that unlike the regular find_by_* methods, which except multiple column names, this only excepts one of the columns you have defined to check ('name' in this case).
+This is a dynamic class method (find_by_*_with_spell_check), similar to ActiveRecord's regular find_by_* finders, but with spell checking functionality, whereby one record with the closest match will be returned. However, note that unlike the regular find_by_* methods, which except multiple column names, this only excepts one of the columns you have defined to check.
 
 You can also do:
 	
 	>> Building.name_dictionary
 	=> #<Hunspell:0x2f6aad4>
 	
-This returns the Hunspell dictionary object, which you can use as such:
+This is also a dynamic class method (*_dictionary), which returns the Hunspell gem dictionary object, which you can use as such:
 
 	>> Building.name_dictionary.spellcheck("Empire State Building")
 	=> true
