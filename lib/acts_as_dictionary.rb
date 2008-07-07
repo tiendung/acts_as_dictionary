@@ -55,7 +55,7 @@ module ActsAsDictionary
     end
     
     def dictionary_name(field)
-      "#{self.name.underscore.gsub(/.*[\/\\]/,'')}_#{field.to_s.pluralize}".to_sym
+      "#{self.name.underscore}_#{field.to_s.pluralize}".to_sym
     end
     
     def dictionary(field)
