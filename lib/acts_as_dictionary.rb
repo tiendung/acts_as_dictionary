@@ -1,7 +1,7 @@
 require 'Hunspell'
 
 module ActsAsDictionary
-  DICT_ROOT = File.join(Rails.root, "dict")
+  DICT_ROOT = File.join(RAILS_ROOT, "dict")
   
   def self.included(base)
     base.extend ActMethods
