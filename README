@@ -11,7 +11,7 @@ This plugin relies on the Hunspell gem, which in turn requires the Hunspell libr
 To install Hunspell:
 	
 	curl -L http://downloads.sourceforge.net/hunspell/hunspell-1.1.12-2.tar.gz -o hunspell-1.1.12-2.tar.gz
-	tar -xvf hunspell-1.1.12-2.tar.gz
+	tar -zxvf hunspell-1.1.12-2.tar.gz
 	cd hunspell-1.1.12
 	./configure
 	make
