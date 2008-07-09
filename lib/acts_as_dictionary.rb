@@ -15,17 +15,50 @@ module ActsAsDictionary
       write_inheritable_attribute :options, options
       write_inheritable_attribute :dictionaries, {}
       self.init_dictionaries
+      self.create_dict_related_methods
     end
   end
-  
+
   module ClassMethods
-    def method_missing(method, *args)
-      if (match = method.to_s.match /find_by_([a-zA-Z]\w*)_with_spell_check/) and self.options[:checks].include? match[1].to_sym
-        self.find_by_name self.dictionary(match[1]).suggest(args[0].downcase).first
-      elsif (match = method.to_s.match /([a-zA-Z]\w*)_dictionary/) and self.options[:checks].include? match[1].to_sym
-        self.dictionary(match[1])
-      else
-        super
+  
+#    FIELD = "([a-zA-Z]\\w*)"
+#    METHOD_REG = Regexp.new("find_by_#{FIELD}_with_spell_check|#{FIELD}_dictionary|suggest_#{FIELD}")
+#
+#    def method_missing(method, *args)
+#      method_name = method.to_s
+#      METHOD_REG =~ method_name
+#      field_name = $1 || $2 || $3 || $4 || $5 || $6
+#      if field_name and options[:checks].include?( field_name.to_sym )
+#        case method_name
+#          when /find_by/
+#            # FIXME: find_by_#{field_name} instead of find_by_name
+#            find_by_name denorm(dictionary(field_name).suggest(norm(args[0])).first)
+#          when /dictionary/
+#            dictionary(field_name)
+#          when /suggest/
+#            dictionary(field_name).suggest(norm(args[0])).map{ |str| denorm(str) }
+#        end
+#      else
+#        super
+#      end
+#    end
+
+    def create_dict_related_methods
+      options[:checks].each do |field|
+        field = field.to_s
+        class_eval <<-EOS, __FILE__, __LINE__
+          def self.find_by_#{field}_with_spell_check(str)
+            find_by_#{field} suggest_#{field}(str).first
+          end
+          
+          def self.#{field}_dictionary
+            dictionary('#{field}')
+          end
+        
+          def self.suggest_#{field}(str)
+            #{field}_dictionary.suggest( norm(str) ).map { |s| denorm(s) }
+          end
+        EOS
       end
     end
     
@@ -33,15 +66,23 @@ module ActsAsDictionary
       Dir.mkdir(DICT_ROOT) unless File.directory?(DICT_ROOT)
       self.options[:checks].each do |field|
         system "touch #{self.aff_file(field)}" # Don't ham file content if existed
+        
         File.open(self.dic_file(field), "w+") do |file|
           items = (self.find(:all, :order => field.to_s) || [])
-          file.write( items.inject("#{items.size}\n"){ |str, i| str += "\"#{i[field]}\"\n" } )
+          file.write( items.inject("#{items.size}\n"){ |s, i| s += "#{norm(i[field])}\n" } )
         end
       end
       return true
     end
     
-    protected
+  protected
+    def norm(str)
+      str.strip.gsub(/\s+/,'_')
+    end
+    
+    def denorm(str)
+      str.gsub(/_/, ' ')
+    end
     
     def init_dictionaries
       self.options[:checks] = [self.options[:checks]].flatten.collect {|field| field.to_sym}
