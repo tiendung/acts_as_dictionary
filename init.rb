@@ -1,4 +1,5 @@
 begin
+  require "rubygems"
   require "hunspell"
 rescue LoadError
   $stderr.puts "Load build-in hunspell lib"

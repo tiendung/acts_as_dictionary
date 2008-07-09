@@ -32,11 +32,10 @@ module ActsAsDictionary
     def generate_dictionaries
       Dir.mkdir(DICT_ROOT) unless File.directory?(DICT_ROOT)
       self.options[:checks].each do |field|
-        File.open(self.aff_file(field), "w+") do |file|
-          file.write ""
-        end
+        system "touch #{self.aff_file(field)}" # Don't ham file content if existed
         File.open(self.dic_file(field), "w+") do |file|
-          file.write "#{self.count}\n#{(self.find(:all, :order => field.to_s) || []).map(&field).join("\n")}"
+          items = (self.find(:all, :order => field.to_s) || [])
+          file.write( items.inject("#{items.size}\n"){ |str, i| str += "\"#{i[field]}\"\n" } )
         end
       end
       return true
