@@ -9,7 +9,7 @@ end
 # try to find hunspell lib
 good_prefix = '/usr/local'
 prefix_list.each do |prefix|
-	if find_library('hunspell-1.1', 'Hunspell_create', prefix + "/lib")
+	if find_library('hunspell-1.2', 'Hunspell_create', prefix + "/lib")
 		good_prefix = prefix
 		break
 	end
