@@ -45,7 +45,6 @@ module ActsAsDictionary
 
     def create_dict_related_methods
       options[:checks].each do |field|
-        field = field.to_s
         class_eval <<-EOS, __FILE__, __LINE__
           def self.find_by_#{field}_with_spell_check(str)
             find_by_#{field} suggest_#{field}(str).first
