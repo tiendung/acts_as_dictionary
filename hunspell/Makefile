@@ -4,56 +4,63 @@ SHELL = /bin/sh
 #### Start of system configuration section. ####
 
 srcdir = .
-topdir = /usr/local/lib/ruby/1.8/i686-linux
+topdir = /usr/local/lib/ruby/1.8/i686-darwin10.0.0d1
 hdrdir = $(topdir)
 VPATH = $(srcdir):$(topdir):$(hdrdir)
-prefix = $(DESTDIR)/usr/local
 exec_prefix = $(prefix)
-sitedir = $(prefix)/lib/ruby/site_ruby
+prefix = $(DESTDIR)/usr/local
+sharedstatedir = $(prefix)/com
+mandir = $(datarootdir)/man
+psdir = $(docdir)
+oldincludedir = $(DESTDIR)/usr/include
+localedir = $(datarootdir)/locale
+bindir = $(exec_prefix)/bin
+libexecdir = $(exec_prefix)/libexec
+sitedir = $(libdir)/ruby/site_ruby
+htmldir = $(docdir)
+vendorarchdir = $(vendorlibdir)/$(sitearch)
+includedir = $(prefix)/include
+infodir = $(datarootdir)/info
+vendorlibdir = $(vendordir)/$(ruby_version)
+sysconfdir = $(prefix)/etc
+libdir = $(exec_prefix)/lib
+sbindir = $(exec_prefix)/sbin
 rubylibdir = $(libdir)/ruby/$(ruby_version)
 docdir = $(datarootdir)/doc/$(PACKAGE)
 dvidir = $(docdir)
+vendordir = $(libdir)/ruby/vendor_ruby
 datarootdir = $(prefix)/share
-archdir = $(rubylibdir)/$(arch)
-sbindir = $(exec_prefix)/sbin
-psdir = $(docdir)
-localedir = $(datarootdir)/locale
-htmldir = $(docdir)
-datadir = $(datarootdir)
-includedir = $(prefix)/include
-infodir = $(datarootdir)/info
-sysconfdir = $(prefix)/etc
-mandir = $(datarootdir)/man
-libdir = $(exec_prefix)/lib
-sharedstatedir = $(prefix)/com
-oldincludedir = $(DESTDIR)/usr/include
 pdfdir = $(docdir)
+archdir = $(rubylibdir)/$(arch)
 sitearchdir = $(sitelibdir)/$(sitearch)
-bindir = $(exec_prefix)/bin
+datadir = $(datarootdir)
 localstatedir = $(prefix)/var
 sitelibdir = $(sitedir)/$(ruby_version)
-libexecdir = $(exec_prefix)/libexec
 
 CC = gcc
 LIBRUBY = $(LIBRUBY_SO)
 LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a
-LIBRUBYARG_SHARED = -Wl,-R -Wl,$(libdir) -L$(libdir) -l$(RUBY_SO_NAME)
+LIBRUBYARG_SHARED = -l$(RUBY_SO_NAME)
 LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static
 
 RUBY_EXTCONF_H = 
-CFLAGS   =  -fPIC -g -O2  -fPIC 
-INCFLAGS = -I. -I. -I/usr/local/lib/ruby/1.8/i686-linux -I.
-CPPFLAGS =  -I/usr/local/include 
+CFLAGS   =  -fno-common -D_XOPEN_SOURCE=1  -fno-common -pipe -fno-common $(cflags) 
+INCFLAGS = -I. -I. -I/usr/local/lib/ruby/1.8/i686-darwin10.0.0d1 -I.
+DEFS     = 
+CPPFLAGS =  -I/usr/local/include  -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE  
 CXXFLAGS = $(CFLAGS) 
-DLDFLAGS = -L.  -rdynamic -Wl,-export-dynamic  
-LDSHARED = $(CC) -shared
+ldflags  = -L. 
+dldflags = 
+archflag = 
+DLDFLAGS = $(ldflags) $(dldflags) $(archflag)
+LDSHARED = cc -dynamic -bundle -undefined suppress -flat_namespace
 AR = ar
 EXEEXT = 
 
 RUBY_INSTALL_NAME = ruby
 RUBY_SO_NAME = ruby
-arch = i686-linux
-sitearch = i686-linux
+arch = i686-darwin10.0.0d1
+sitearch = i686-darwin10.0.0d1
 ruby_version = 1.8
 ruby = /usr/local/bin/ruby
 RUBY = $(ruby)
@@ -69,7 +76,7 @@ COPY = cp
 preload = 
 
 libpath = . $(libdir) /usr/local/lib
-LIBPATH =  -L'.' -L'$(libdir)' -Wl,-R'$(libdir)' -L'/usr/local/lib' -Wl,-R'/usr/local/lib'
+LIBPATH =  -L. -L$(libdir) -L/usr/local/lib
 DEFFILE = 
 
 CLEANFILES = mkmf.log
@@ -79,20 +86,21 @@ extout =
 extout_prefix = 
 target_prefix = 
 LOCAL_LIBS = 
-LIBS = $(LIBRUBYARG_SHARED) -lhunspell-1.2  -lpthread -ldl -lcrypt -lm   -lc
+LIBS = $(LIBRUBYARG_SHARED) -lhunspell-1.1  -lpthread -ldl -lobjc  
 SRCS = hunspell.c
 OBJS = hunspell.o
 TARGET = Hunspell
-DLLIB = $(TARGET).so
+DLLIB = $(TARGET).bundle
 EXTSTATIC = 
 STATIC_LIB = 
 
+BINDIR        = $(bindir)
 RUBYCOMMONDIR = $(sitedir)$(target_prefix)
 RUBYLIBDIR    = $(sitelibdir)$(target_prefix)
 RUBYARCHDIR   = $(sitearchdir)$(target_prefix)
 
 TARGET_SO     = $(DLLIB)
-CLEANLIBS     = $(TARGET).so $(TARGET).il? $(TARGET).tds $(TARGET).map
+CLEANLIBS     = $(TARGET).bundle $(TARGET).il? $(TARGET).tds $(TARGET).map
 CLEANOBJS     = *.o *.a *.s[ol] *.pdb *.exp *.bak
 
 all:		$(DLLIB)
