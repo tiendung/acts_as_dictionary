@@ -67,8 +67,9 @@ module ActsAsDictionary
         system "touch #{self.aff_file(field)}" # Don't ham file content if existed
         
         File.open(self.dic_file(field), "w+") do |file|
-          items = (self.find(:all, :order => field.to_s) || []).uniq!
-          file.write( items.inject("#{items.size}\n"){ |s, i| s += "#{norm(i[field])}\n" } )
+          items = (self.find(:all, :order => field.to_s) || [])
+          items = items.map{|i| i[field]}.uniq
+          file.write( items.inject("#{items.size}\n"){ |s, i| s += "#{norm(i)}\n" } )
         end
       end
       return true
