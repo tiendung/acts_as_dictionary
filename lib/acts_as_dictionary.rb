@@ -68,7 +68,7 @@ module ActsAsDictionary
         
         File.open(self.dic_file(field), "w+") do |file|
           items = (self.find(:all, :order => field.to_s) || [])
-          items = items.map{|i| i[field]}.uniq
+          items = items.inject([]){ |a,i| a += i[field].split("\n") }.uniq.sort
           file.write( items.inject("#{items.size}\n"){ |s, i| s += "#{norm(i)}\n" } )
         end
       end
