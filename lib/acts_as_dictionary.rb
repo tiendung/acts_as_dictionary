@@ -67,7 +67,7 @@ module ActsAsDictionary
         system "touch #{self.aff_file(field)}" # Don't ham file content if existed
         
         File.open(self.dic_file(field), "w+") do |file|
-          items = (self.find(:all, :order => field.to_s) || [])
+          items = (self.find(:all, :order => field.to_s) || []).uniq!
           file.write( items.inject("#{items.size}\n"){ |s, i| s += "#{norm(i[field])}\n" } )
         end
       end
@@ -76,11 +76,11 @@ module ActsAsDictionary
     
   protected
     def norm(str)
-      str.strip.gsub(/\s+/,'_')
+      str # str.strip.gsub(/\s+/,' ').downcase
     end
     
     def denorm(str)
-      str.gsub(/_/, ' ')
+      str # str.gsub(/_/, ' ')
     end
     
     def init_dictionaries
