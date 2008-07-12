@@ -13,7 +13,7 @@ module ActsAsDictionary
         include InstanceMethods
       end
       write_inheritable_attribute :options, options
-      write_inheritable_attribute :dictionaries, {}
+      write_inheritable_attribute :dictionaries, {}      
       self.init_dictionaries
       self.create_dict_related_methods
     end
@@ -33,7 +33,7 @@ module ActsAsDictionary
           end
         
           def self.suggest_#{field}(str)
-            #{field}_dictionary.suggest( norm(str) ).map { |s| denorm(s) }
+            dictionary('#{field}').suggest(str)
           end
         EOS
       end
@@ -47,43 +47,35 @@ module ActsAsDictionary
         File.open(self.dic_file(field), "w+") do |file|
           items = self.find(:all) || []
           items = items.inject([]){ |a, i| a += i[field].split("\n") }.uniq.sort
-          file.write( items.inject("#{items.size}\n"){ |s, i| s += "#{norm(i)}\n" } )
+          file.write("#{items.size}\n#{items.join("\n")}")
         end
       end
       return true
     end
     
   protected
-    def norm(str)
-      str # str.strip.gsub(/\s+/,' ').downcase
-    end
-    
-    def denorm(str)
-      str # str.gsub(/_/, ' ')
-    end
-    
     def init_dictionaries
-      self.options[:checks] = [self.options[:checks]].flatten.collect {|field| field.to_sym}
-      self.options[:checks].each do |field|
-        raise "'#{field}' is not valid column in #{self.name}." unless self.column_names.include? field.to_s
-        self.dictionaries.store self.dictionary_name(field), Hunspell.new(self.aff_file(field), self.dic_file(field))
+      options[:checks] = [options[:checks]].flatten.collect {|field| field.to_sym}
+      options[:checks].each do |field|
+        raise "'#{field}' is not valid column in #{name}." unless column_names.include? field.to_s
       end
     end
     
     def dictionary_name(field)
-      "#{self.name.underscore}_#{field.to_s.pluralize}".to_sym
+      "#{name.underscore}_#{field.to_s.pluralize}".to_sym
     end
     
     def dictionary(field)
-      self.dictionaries[self.dictionary_name(field)]
+       # Do lazy load
+      dictionaries[dictionary_name(field)] ||= Hunspell.new(aff_file(field), dic_file(field))
     end
     
     def aff_file(field)
-      File.join(DICT_ROOT, "#{self.dictionary_name(field)}.aff")
+      File.join(DICT_ROOT, "#{dictionary_name(field)}.aff")
     end
     
     def dic_file(field)
-      File.join(DICT_ROOT, "#{self.dictionary_name(field)}.dic")
+      File.join(DICT_ROOT, "#{dictionary_name(field)}.dic")
     end
   end
   
