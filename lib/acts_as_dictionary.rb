@@ -21,28 +21,6 @@ module ActsAsDictionary
 
   module ClassMethods
   
-#    FIELD = "([a-zA-Z]\\w*)"
-#    METHOD_REG = Regexp.new("find_by_#{FIELD}_with_spell_check|#{FIELD}_dictionary|suggest_#{FIELD}")
-#
-#    def method_missing(method, *args)
-#      method_name = method.to_s
-#      METHOD_REG =~ method_name
-#      field_name = $1 || $2 || $3 || $4 || $5 || $6
-#      if field_name and options[:checks].include?( field_name.to_sym )
-#        case method_name
-#          when /find_by/
-#            # FIXME: find_by_#{field_name} instead of find_by_name
-#            find_by_name denorm(dictionary(field_name).suggest(norm(args[0])).first)
-#          when /dictionary/
-#            dictionary(field_name)
-#          when /suggest/
-#            dictionary(field_name).suggest(norm(args[0])).map{ |str| denorm(str) }
-#        end
-#      else
-#        super
-#      end
-#    end
-
     def create_dict_related_methods
       options[:checks].each do |field|
         class_eval <<-EOS, __FILE__, __LINE__
@@ -67,8 +45,8 @@ module ActsAsDictionary
         system "touch #{self.aff_file(field)}" # Don't ham file content if existed
         
         File.open(self.dic_file(field), "w+") do |file|
-          items = (self.find(:all, :order => field.to_s) || [])
-          items = items.inject([]){ |a,i| a += i[field].split("\n") }.uniq.sort
+          items = self.find(:all) || []
+          items = items.inject([]){ |a, i| a += i[field].split("\n") }.uniq.sort
           file.write( items.inject("#{items.size}\n"){ |s, i| s += "#{norm(i)}\n" } )
         end
       end
