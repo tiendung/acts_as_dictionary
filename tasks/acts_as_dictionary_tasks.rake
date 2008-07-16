@@ -15,12 +15,11 @@ namespace :dict do
     # Borrow from ThinkingSphinx's configure.rb
     base = "#{Rails.root}/app/models/"
     Dir["#{base}**/*.rb"].each do |file|
-      model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1')      
-      # Hack to skip all xxx_related.rb files
-      next if /_related/i =~ model_name
+      default_model_name = file.gsub(/^#{base}([\w_\/\\]+)\.rb/, '\1').classify      
+      model_name = default_model_name.split('::').last
 
       klass = begin
-        model_name.classify.constantize
+        model_name.constantize
       rescue LoadError
         model_name.gsub!(/.*[\/\\]/, '')
         retry
