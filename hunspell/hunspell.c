@@ -131,7 +131,7 @@ static VALUE mHunspellSuggest(VALUE self, VALUE str) {
 #ifdef DEBUG
 	printf("mHunspellSuggest %s -> %d\n", StringValueCStr(str), n);
 #endif
-
+        Hunspell_free_list(*ptr, &lst, n);
 	return ret;
 }
 
