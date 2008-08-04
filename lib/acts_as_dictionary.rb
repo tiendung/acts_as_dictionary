@@ -22,7 +22,7 @@ module ActsAsDictionary
   end
 
   module ClassMethods
-  
+    
     def create_dict_related_methods
       options[:checks].each do |field|
         class_eval <<-EOS, __FILE__, __LINE__
@@ -30,12 +30,12 @@ module ActsAsDictionary
             find_by_#{field} suggest_#{field}(str).first
           end
           
-          def self.#{field}_dictionary
-            dictionary('#{field}')
-          end
-        
           def self.suggest_#{field}(str)
             dictionary('#{field}').suggest(str)
+          end
+
+          def self.check_#{field}(str)
+            dictionary('#{field}').check(str)
           end
         EOS
       end
@@ -44,7 +44,7 @@ module ActsAsDictionary
     def generate_dictionaries
       Dir.mkdir(DICT_ROOT) unless File.directory?(DICT_ROOT)
       self.options[:checks].each do |field|
-        system "touch #{self.aff_file(field)}" # Don't ham file content if existed
+        system "touch #{self.aff_file(field)}" # Don't destroy content within file if it exists
         
         File.open(self.dic_file(field), "w+") do |file|
           items = self.find(:all) || []
@@ -56,6 +56,7 @@ module ActsAsDictionary
     end
     
   protected
+  
     def init_dictionaries
       options[:checks] = [options[:checks]].flatten.collect {|field| field.to_sym}
       options[:checks].each do |field|
@@ -79,6 +80,7 @@ module ActsAsDictionary
     def dic_file(field)
       File.join(DICT_ROOT, "#{dictionary_name(field)}.dic")
     end
+    
   end
   
   module InstanceMethods
