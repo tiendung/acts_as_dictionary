@@ -1,2 +1,2 @@
 require "hunspell"
-ActiveRecord::Base.send(:include, ActsAsDictionary) 
+ActiveRecord::Base.send(:include, ActsAsDictionary)

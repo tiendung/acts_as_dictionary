@@ -1,3 +1,5 @@
+require 'hunspell'
+
 module ActsAsDictionary
   DICT_ROOT = File.join(RAILS_ROOT, "dict")
   

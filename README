@@ -74,7 +74,7 @@ You can also do:
 	
 This is also a dynamic class method (*_dictionary), which returns the Hunspell gem dictionary object, which you can use as such:
 
-	>> Building.name_dictionary.spellcheck("Empire State Building")
+	>> Building.name_dictionary.check("Empire State Building")
 	=> true
 
 	>> Building.name_dictionary.suggest("Emprye State Buildng".downcase)
