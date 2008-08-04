@@ -9,7 +9,7 @@ require 'inline'
 
 class Hunspell
   inline do |builder|
-    builder.add_link_flags("-lhunspell-1.1")
+    builder.add_link_flags("-lhunspell-1.2")
     
     builder.prefix <<-EOC
       typedef struct Hunhandle Hunhandle;
@@ -59,7 +59,10 @@ class Hunspell
           rb_ary_push(suggestions, rb_str_new2(item));
           free(item);
         }
-        if (n > 0) { free(list); }
+
+        if (n > 0) { 
+          free(list); 
+        }
 
         return suggestions;
       }
