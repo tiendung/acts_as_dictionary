@@ -3,6 +3,7 @@ require 'inline'
 
 class Hunspell
   inline do |builder|
+    builder.add_link_flags("-L/usr/lib")
     builder.add_link_flags("-lhunspell-1.2")
     
     builder.prefix <<-HUNSPELL_H

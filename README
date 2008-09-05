@@ -10,9 +10,9 @@ This plugin requires the Hunspell library and RubyInline gem.
 
 To install Hunspell:
 	
-	curl -L http://downloads.sourceforge.net/hunspell/hunspell-1.2.6.tar.gz -o hunspell-1.2.6.tar.gz
-	tar -zxvf hunspell-1.2.6.tar.gz
-	cd hunspell-1.2.6.tar.gz
+	curl -O http://nchc.dl.sourceforge.net/sourceforge/hunspell/hunspell-1.2.7.tar.gz
+	tar -zxvf hunspell-1.2.7.tar.gz
+	cd hunspell-1.2.7.tar.gz
 	./configure
 	make
 	make install
