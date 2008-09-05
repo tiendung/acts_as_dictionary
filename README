@@ -12,10 +12,10 @@ To install Hunspell:
 	
 	curl -O http://nchc.dl.sourceforge.net/sourceforge/hunspell/hunspell-1.2.7.tar.gz
 	tar -zxvf hunspell-1.2.7.tar.gz
-	cd hunspell-1.2.7.tar.gz
+	cd hunspell-1.2.7
 	./configure
 	make
-	make install
+	sudo make install
 	
 To install RubyInline:
 
